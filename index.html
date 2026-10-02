@@ -268,7 +268,7 @@
     const toast = document.querySelector('#toast');
     let activeQuote = quotes[0];
     let activeTopic = 'Todas';
-    let quoteIndex = 0;
+    let quoteIndex = 1;
     let savedQuotes = loadFavorites();
     let toastTimer;
 
@@ -291,7 +291,6 @@
     function renderQuote() {
       quoteText.innerHTML = `<span class="quote-mark" aria-hidden="true">“</span> ${activeQuote.text} <span class="quote-mark" aria-hidden="true">”</span>`;
       quoteCategory.textContent = activeQuote.category;
-      quoteIndex += 1;
       quoteNumber.textContent = `Frase ${String(quoteIndex).padStart(3, '0')}`;
       const isSaved = savedQuotes.some(item => item.text === activeQuote.text);
       favoriteButton.setAttribute('aria-pressed', String(isSaved));
@@ -340,6 +339,7 @@
       const options = quotes.filter(item => activeTopic === 'Todas' || item.category === activeTopic);
       const choices = options.filter(item => item.text !== activeQuote.text);
       activeQuote = choices[Math.floor(Math.random() * choices.length)] || options[0];
+      quoteIndex += 1;
       renderQuote();
     }
 
