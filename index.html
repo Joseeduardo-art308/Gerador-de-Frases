@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2eddf">
+  <title>Vai dar certo. Talvez. — Gerador de frases</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      color-scheme: light;
+      --paper: #f2eddf;
+      --ink: #20231e;
+      --muted: #67695f;
+      --red: #d44932;
+      --lime: #d5ed68;
+      --line: #c8c4b6;
+      --serif: Georgia, 'Times New Roman', serif;
+      --sans: 'Space Grotesk', 'Trebuchet MS', sans-serif;
+      --mono: 'DM Mono', 'Courier New', monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(#20231e14 .65px, transparent .65px);
+      background-size: 7px 7px;
+      font-family: var(--sans);
+    }
+
+    button { color: inherit; font: inherit; }
+
+    .page {
+      width: min(100% - 48px, 1160px);
+      min-height: 100vh;
+      margin-inline: auto;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .masthead {
+      min-height: 86px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--ink);
+      font: 500 11px var(--mono);
+      text-transform: uppercase;
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .brand-mark { width: 14px; height: 14px; background: var(--red); transform: rotate(45deg); }
+    .edition { color: var(--muted); }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: clamp(40px, 8vw, 120px);
+      align-items: center;
+      padding-block: 70px 84px;
+    }
+
+    .generator { max-width: 700px; }
+    .eyebrow, .section-label {
+      margin: 0;
+      font: 500 11px var(--mono);
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--red); }
+    .eyebrow::before { width: 26px; height: 1px; content: ''; background: currentColor; }
+
+    h1 {
+      max-width: 690px;
+      margin: 24px 0 42px;
+      font-size: clamp(48px, 7vw, 88px);
+      line-height: .98;
+      font-weight: 600;
+    }
+
+    h1 em { color: var(--red); font-family: var(--serif); font-weight: 400; }
+
+    .quote {
+      min-height: 244px;
+      padding: 28px 32px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--lime);
+      border: 1px solid var(--ink);
+      box-shadow: 7px 7px 0 var(--ink);
+      transform: rotate(-1deg);
+      animation: arrive .35s ease-out both;
+    }
+
+    .quote-meta { display: flex; justify-content: space-between; gap: 12px; font: 500 10px var(--mono); text-transform: uppercase; }
+    .quote-text { max-width: 620px; margin: 28px 0 30px; font-size: clamp(26px, 3.6vw, 43px); line-height: 1.12; font-weight: 600; }
+    .quote-mark { color: var(--red); font: 44px/0 var(--serif); vertical-align: -.22em; }
+
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 29px; }
+    .button {
+      min-height: 46px;
+      padding: 0 17px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .button:hover { transform: translateY(-2px); background: #ffffff80; }
+    .button:focus-visible, .chip:focus-visible, .text-button:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+    .button-primary { background: #1558b0; color: #fff; }
+    .button-primary:hover { background: #104487; }
+    .button-icon { font-size: 17px; line-height: 1; }
+
+    .topics { margin-top: 31px; }
+    .topic-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      font: 11px var(--mono);
+      transition: background .15s ease, border-color .15s ease;
+    }
+
+    .chip:hover, .chip[aria-pressed="true"] { border-color: var(--ink); background: #fff9; }
+
+    .favorites {
+      align-self: stretch;
+      padding: 21px 0;
+      border-top: 1px solid var(--ink);
+    }
+
+    .favorites-heading { display: flex; justify-content: space-between; align-items: center; padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+    .favorite-count { color: var(--muted); font: 11px var(--mono); }
+    .favorite-list { display: grid; }
+    .favorite-item { padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .favorite-item p { margin: 0 0 12px; font: 14px/1.45 var(--serif); }
+    .favorite-item button, .text-button { padding: 0; border: 0; background: none; color: var(--red); cursor: pointer; font: 10px var(--mono); text-transform: uppercase; }
+    .empty-state { max-width: 230px; margin-top: 19px; color: var(--muted); font: 13px/1.5 var(--serif); }
+    .favorite-actions { display: flex; gap: 14px; margin-top: 15px; }
+
+    footer {
+      min-height: 62px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--ink);
+      color: var(--muted);
+      font: 10px var(--mono);
+      text-transform: uppercase;
+    }
+
+    .toast { position: fixed; right: 24px; bottom: 24px; padding: 12px 16px; background: var(--ink); color: var(--paper); font: 12px var(--mono); opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity .2s, transform .2s; }
+    .toast.visible { opacity: 1; transform: translateY(0); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+    @keyframes arrive { from { opacity: .35; transform: translateY(7px) rotate(-1deg); } to { opacity: 1; transform: translateY(0) rotate(-1deg); } }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 32px, 560px); }
+      .masthead { min-height: 68px; }
+      main { grid-template-columns: 1fr; gap: 54px; padding-block: 48px 56px; }
+      h1 { margin-block: 20px 32px; }
+      .quote { min-height: 220px; padding: 23px 22px 24px; }
+      .favorites { padding-top: 0; }
+      footer { gap: 18px; font-size: 9px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Clube do quase lá</span></div>
+      <span class="edition">Motivação sem garantia · Nº 001</span>
+    </header>
+
+    <main>
+      <section class="generator" aria-labelledby="title">
+        <p class="eyebrow">Um empurrãozinho, com ressalvas</p>
+        <h1 id="title">Vai dar certo.<br><em>Talvez.</em></h1>
+
+        <article class="quote" aria-live="polite" aria-atomic="true">
+          <div class="quote-meta"><span id="quote-category">Trabalho</span><span id="quote-number">Frase 001</span></div>
+          <p class="quote-text" id="quote-text"><span class="quote-mark" aria-hidden="true">“</span> Você consegue. Já fez coisa pior com menos café. <span class="quote-mark" aria-hidden="true">”</span></p>
+        </article>
+
+        <div class="actions">
+          <button class="button button-primary" id="generate" type="button"><span class="button-icon" aria-hidden="true">↻</span> Outra frase</button>
+          <button class="button" id="copy" type="button"><span class="button-icon" aria-hidden="true">▢</span> Copiar</button>
+          <button class="button" id="favorite" type="button" aria-pressed="false"><span class="button-icon" aria-hidden="true">♡</span> Guardar</button>
+        </div>
+
+        <div class="topics">
+          <p class="section-label">Escolha o caos</p>
+          <div class="topic-list" role="group" aria-label="Tema das frases">
+            <button class="chip" type="button" data-topic="Todas" aria-pressed="true">Tudo</button>
+            <button class="chip" type="button" data-topic="Trabalho" aria-pressed="false">Trabalho</button>
+            <button class="chip" type="button" data-topic="Rotina" aria-pressed="false">Rotina</button>
+            <button class="chip" type="button" data-topic="Autoestima" aria-pressed="false">Autoestima</button>
+            <button class="chip" type="button" data-topic="Segunda-feira" aria-pressed="false">Segunda-feira</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="favorites" aria-labelledby="favorites-title">
+        <div class="favorites-heading">
+          <h2 class="section-label" id="favorites-title">Arquivo de esperança</h2>
+          <span class="favorite-count" id="favorite-count">0 / 20</span>
+        </div>
+        <div class="favorite-list" id="favorite-list"></div>
+        <p class="empty-state" id="empty-state">Nenhuma frase salva. Seu otimismo ainda está em fase de testes.</p>
+        <div class="favorite-actions" id="favorite-actions" hidden>
+          <button class="text-button" id="export-favorites" type="button">Baixar arquivo</button>
+          <button class="text-button" id="clear-favorites" type="button">Limpar tudo</button>
+        </div>
+      </aside>
+    </main>
+
+    <footer><span>Promessas motivacionais, resultados variáveis.</span><span>Feito com 2% de certeza.</span></footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const quotes = [
+      { category: 'Trabalho', text: 'Você consegue. Já fez coisa pior com menos café.' },
+      { category: 'Trabalho', text: 'Vai lá e arrasa. O prazo já está fazendo isso por você.' },
+      { category: 'Trabalho', text: 'Confie no processo. Principalmente porque ninguém sabe qual é.' },
+      { category: 'Trabalho', text: 'Seu potencial é enorme. Seu salário ainda não percebeu.' },
+      { category: 'Trabalho', text: 'Dê o seu melhor. O mínimo também conta como uma escolha.' },
+      { category: 'Rotina', text: 'Um passo de cada vez. Tropeçar continua sendo movimento.' },
+      { category: 'Rotina', text: 'Hoje é um ótimo dia para recomeçar. De novo. Sem julgamentos.' },
+      { category: 'Rotina', text: 'Respire fundo. É grátis e, por enquanto, ainda permitido.' },
+      { category: 'Rotina', text: 'Faça uma pausa. A culpa pode esperar na fila como todo mundo.' },
+      { category: 'Autoestima', text: 'Você é único. Ainda bem: uma versão de certas decisões já basta.' },
+      { category: 'Autoestima', text: 'Acredite em você. Alguém precisa manter essa operação.' },
+      { category: 'Autoestima', text: 'Você merece coisas boas. Comece acreditando nisso, que já dá trabalho.' },
+      { category: 'Autoestima', text: 'Não se compare. Ninguém posta a planilha de boletos.' },
+      { category: 'Segunda-feira', text: 'Segunda chegou. Finja surpresa: ela faz isso toda semana.' },
+      { category: 'Segunda-feira', text: 'A semana está começando. Suas expectativas podem vir depois.' },
+      { category: 'Segunda-feira', text: 'Levanta e vai. A cama já venceu a discussão de ontem.' }
+    ];
+
+    const storageKey = 'clube-do-quase-la-favoritas';
+    const quoteText = document.querySelector('#quote-text');
+    const quoteCategory = document.querySelector('#quote-category');
+    const quoteNumber = document.querySelector('#quote-number');
+    const favoriteButton = document.querySelector('#favorite');
+    const favoriteList = document.querySelector('#favorite-list');
+    const toast = document.querySelector('#toast');
+    let activeQuote = quotes[0];
+    let activeTopic = 'Todas';
+    let quoteIndex = 0;
+    let savedQuotes = loadFavorites();
+    let toastTimer;
+
+    function loadFavorites() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        return Array.isArray(saved) ? saved.filter(item => item && typeof item.text === 'string' && typeof item.category === 'string').slice(0, 20) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('visible');
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove('visible'), 2200);
+    }
+
+    function renderQuote() {
+      quoteText.innerHTML = `<span class="quote-mark" aria-hidden="true">“</span> ${activeQuote.text} <span class="quote-mark" aria-hidden="true">”</span>`;
+      quoteCategory.textContent = activeQuote.category;
+      quoteIndex += 1;
+      quoteNumber.textContent = `Frase ${String(quoteIndex).padStart(3, '0')}`;
+      const isSaved = savedQuotes.some(item => item.text === activeQuote.text);
+      favoriteButton.setAttribute('aria-pressed', String(isSaved));
+      favoriteButton.innerHTML = `<span class="button-icon" aria-hidden="true">${isSaved ? '♥' : '♡'}</span> ${isSaved ? 'Guardada' : 'Guardar'}`;
+      const quote = document.querySelector('.quote');
+      quote.style.animation = 'none';
+      void quote.offsetWidth;
+      quote.style.animation = '';
+    }
+
+    function persistFavorites() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(savedQuotes));
+      } catch {
+        showToast('Não foi possível salvar neste navegador.');
+      }
+      renderFavorites();
+      renderQuote();
+    }
+
+    function renderFavorites() {
+      favoriteList.replaceChildren();
+      document.querySelector('#favorite-count').textContent = `${savedQuotes.length} / 20`;
+      document.querySelector('#empty-state').hidden = savedQuotes.length > 0;
+      document.querySelector('#favorite-actions').hidden = savedQuotes.length === 0;
+
+      savedQuotes.forEach((item, index) => {
+        const entry = document.createElement('article');
+        entry.className = 'favorite-item';
+        const text = document.createElement('p');
+        text.textContent = item.text;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = 'Remover';
+        remove.setAttribute('aria-label', `Remover frase: ${item.text}`);
+        remove.addEventListener('click', () => {
+          savedQuotes.splice(index, 1);
+          persistFavorites();
+        });
+        entry.append(text, remove);
+        favoriteList.append(entry);
+      });
+    }
+
+    function generateQuote() {
+      const options = quotes.filter(item => activeTopic === 'Todas' || item.category === activeTopic);
+      const choices = options.filter(item => item.text !== activeQuote.text);
+      activeQuote = choices[Math.floor(Math.random() * choices.length)] || options[0];
+      renderQuote();
+    }
+
+    document.querySelector('#generate').addEventListener('click', generateQuote);
+    document.querySelector('#copy').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(`“${activeQuote.text}”`);
+        showToast('Frase copiada. Espalhe com responsabilidade.');
+      } catch {
+        showToast('A cópia automática não está disponível aqui.');
+      }
+    });
+
+    favoriteButton.addEventListener('click', () => {
+      const existingIndex = savedQuotes.findIndex(item => item.text === activeQuote.text);
+      if (existingIndex >= 0) {
+        savedQuotes.splice(existingIndex, 1);
+        showToast('Removida do arquivo.');
+      } else if (savedQuotes.length < 20) {
+        savedQuotes.unshift(activeQuote);
+        showToast('Guardada. A esperança foi arquivada.');
+      } else {
+        showToast('Arquivo cheio. Até esperança precisa de limite.');
+        return;
+      }
+      persistFavorites();
+    });
+
+    document.querySelectorAll('.chip').forEach(button => {
+      button.addEventListener('click', () => {
+        activeTopic = button.dataset.topic;
+        document.querySelectorAll('.chip').forEach(chip => chip.setAttribute('aria-pressed', String(chip === button)));
+        generateQuote();
+      });
+    });
+
+    document.querySelector('#clear-favorites').addEventListener('click', () => {
+      savedQuotes = [];
+      persistFavorites();
+      showToast('Arquivo zerado. Um novo começo, que original.');
+    });
+
+    document.querySelector('#export-favorites').addEventListener('click', () => {
+      const contents = savedQuotes.map(item => `“${item.text}” — ${item.category}`).join('\n\n');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([contents], { type: 'text/plain;charset=utf-8' }));
+      link.download = 'frases-favoritas.txt';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    renderFavorites();
+    renderQuote();
+  </script>
+</body>
+</html>
